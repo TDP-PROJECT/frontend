@@ -1,5 +1,5 @@
+import { TabType } from "@/types";
 import { Dispatch, SetStateAction } from "react";
-import { TabType } from "../page";
 
 type Props = {
   selectedTab: string;
