@@ -4,11 +4,12 @@ import Tab from "./_components/Tab";
 import { useState } from "react";
 import { machineList } from "@/constant";
 import { TabType } from "@/types";
+import { useRouter } from "next/navigation";
 
 
 export default function SelectPage() {
   const [selectedTab, setSelectedTab] = useState<TabType>("기계공학");
-
+  const router = useRouter();
   return (
     <div className="w-screen h-screen flex flex-col gap-20 ">
       <div className="w-full">
@@ -23,7 +24,7 @@ export default function SelectPage() {
             <img src={item.img} alt={item.name} className=" object-cover aspect-video rounded-lg shadow-lg" />
             <div className="flex justify-between items-center  h-14">
               <p className="text-lg font-medium">{item.name}</p>
-              <button className="cursor-pointer shadow-lg" aria-label="바로가기"><Image src={'/icons/goIcon.png'} alt="바로가기" width={40} height={40} /></button>
+              <button onClick={() => router.push(`/viewer?name=${item.name}`)} className="cursor-pointer shadow-lg" aria-label="바로가기"><Image src={'/icons/goIcon.png'} alt="바로가기" width={40} height={40} /></button>
             </div>
           </div>
         ))}
