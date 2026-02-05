@@ -22,13 +22,16 @@ export default function ViewerPage() {
   const handleMeshSelect = (meshData: any) => {
     setSelectedMesh(meshData);
   };
-
+  const hnadleMenuClose = () => {
+    setIsMenu(!isMenu)
+    setIsDetail(false);
+  }
   return (
     <div className="flex w-screen h-screen px-2">
-      <div>
-        <div className="w-96 h-20 shadow-lg flex justify-between items-center px-7">
+      <div className="absolute top-20 left-0 w-96 z-1">
+        <div className="w-96 h-20 shadow-lg flex justify-between items-center px-7 bg-white rounded-lg">
           <p className="font-medium">{name}</p>
-          <Image className="cursor-pointer" onClick={() => setIsMenu(!isMenu)} src={`/icons/${isMenu ? 'Up' : 'Down'}.svg`} alt="아이콘" width={20} height={20} />
+          <Image className="cursor-pointer" onClick={hnadleMenuClose} src={`/icons/${isMenu ? 'Up' : 'Down'}.svg`} alt="아이콘" width={20} height={20} />
         </div>
         <div
           className={`transition-transform duration-500 ease-in-out overflow-hidden 
@@ -41,8 +44,8 @@ export default function ViewerPage() {
           {selectedPart && <DetailBox selectedPart={selectedPart} setIsDetail={setIsDetail} isDetail={isDetail} />}
         </div>
       </div>
-      <div className="flex-1">
-        {/* <ThreeViewer onMeshSelect={handleMeshSelect} /> */}
+      <div className="flex-1 ">
+        <ThreeViewer onMeshSelect={handleMeshSelect} />
       </div>
 
     </div>

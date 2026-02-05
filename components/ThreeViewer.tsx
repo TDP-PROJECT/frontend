@@ -270,7 +270,7 @@ export default function ThreeViewer({ onMeshSelect }: Props) {
           width: "300px",
         }}
       />
-      <div className="fixed bottom-10 left-1/2 -translate-x-1/2 flex gap-1">
+      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 flex gap-1">
         {ActionButtons.map((button) => <ActionButton key={button.label} icon={button.icon} label={button.label} />)}
       </div>
     </div>

@@ -20,10 +20,10 @@ export const machineList = {
 
 export const ActionButtons = [
   {
-    icon: '/icons/See.svg', label: '보기'
+    icon: '/icons/Home.svg', label: '홈'
   },
   {
-    icon: '/icons/Section.svg', label: '단면'
+    icon: '/icons/See.svg', label: '보기'
   },
   {
     icon: '/icons/Explode.svg', label: '분해'
