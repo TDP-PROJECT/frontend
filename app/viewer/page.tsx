@@ -26,6 +26,7 @@ export default function ViewerPage() {
     setIsMenu(!isMenu)
     setIsDetail(false);
   }
+  console.log(selectedMesh);
   return (
     <div className="flex w-screen h-screen px-2">
       <div className="absolute top-20 left-0 w-96 z-1">

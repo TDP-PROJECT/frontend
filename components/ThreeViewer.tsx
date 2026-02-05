@@ -27,12 +27,12 @@ export default function ThreeViewer({ onMeshSelect }: Props) {
 
     /* 카메라 */
     const camera = new THREE.PerspectiveCamera(
-      20,
+      30,
       mountRef.current.clientWidth / mountRef.current.clientHeight,
       0.1,
       100
     );
-    camera.position.set(3, 2.5, 3);
+    camera.position.set(6, 6, 5);
     camera.lookAt(0, 0, 0);
 
     /* 렌더러 */
@@ -59,7 +59,7 @@ export default function ThreeViewer({ onMeshSelect }: Props) {
     controls.enableZoom = true;
     controls.zoomSpeed = 1.0;
     controls.minDistance = 2; // 너무 가까이 못 가게
-    controls.maxDistance = 12; // 너무 멀리 못 가게
+    controls.maxDistance = 15; // 너무 멀리 못 가게
 
     /* glb 로드 영역 */
     const loader = new GLTFLoader();
