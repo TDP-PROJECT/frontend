@@ -9,7 +9,7 @@ interface IPart {
 interface ICategoryItem {
   idx: number;
   name: string;
-  image?: string;
+  image: string;
 }
 
 interface ICategory {
