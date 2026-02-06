@@ -5,6 +5,7 @@ import { machineList } from "@/constant";
 import { useRouter } from "next/navigation";
 import Tab from "./Tab";
 import { fetchCategoryInModel } from "@/lib/api/model";
+import ModelCard from "@/components/ModelCard";
 
 interface Props {
   category?: ICategory
@@ -42,24 +43,12 @@ export default function SelectClient({ category }: Props) {
       </div>
       <div className="grid grid-cols-4 justify-center gap-4 mt-6 max-w-7xl w-full mx-auto">
         {machineList[selectedTab].map((item, index) => (
-          <div key={index}>
-            <img
-              src={item.img}
-              alt={item.name}
-              className=" object-cover aspect-video rounded-lg shadow-lg"
-            />
-            <div className="flex justify-between items-center  h-14">
-              <p className="text-lg font-medium">{item.name}</p>
-              <button
-                onClick={() => router.push(`/viewer?name=${item.name}`)}
-                className="cursor-pointer shadow-lg"
-                aria-label="바로가기"
-              >
-                <Image src={"/icons/goIcon.png"} alt="바로가기" width={40} height={40} />
-              </button>
-            </div>
-          </div>
+          <ModelCard model={item} key={index} />
         ))}
+
+        {/* {modelList.map((item, index) => (
+          <ModelCard model={item} key={index} />
+        ))} */}
       </div>
     </div>
   );

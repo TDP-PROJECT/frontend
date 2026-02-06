@@ -23,8 +23,9 @@ export default function Tab({ selectedTab, setSelectedTab, category }: Props) {
           </button>)}
       </div> */}
       <div className="flex bg-white  overflow-hidden border rounded-2xl ">
-        {['기계공학', '생명공학', '의공학'].map((cate) =>
+        {['기계공학', '생명공학', '의공학'].map((cate, idx) =>
           <button
+            key={idx}
             onClick={() => setSelectedTab(cate)}
             className={`px-6 py-2 transition-colors duration-300  cursor-pointer  rounded-2xl
               ${selectedTab === cate ? "bg-black text-white" : "bg-white text-black"
