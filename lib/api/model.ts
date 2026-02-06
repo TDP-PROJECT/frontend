@@ -1,14 +1,17 @@
 
 
-export async function fetchCategory(): Promise<ICategory> {
-  const res = await fetch(
-    `${process.env.API_BASE_URL}/model/category}`,
-    { method: "GET", headers: { Accept: "application/json" }, next: { revalidate: 60 } }
+export async function fetchCategory(): Promise<ICategoryItem> {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_LOCAL_URL}/proxy/model/category`,
+    {
+      method: "GET",
+      headers: { Accept: "application/json" },
+      cache: 'force-cache'
+    }
   );
 
   const body = await res.json().catch(() => null);
-
-  if (res.ok) return body as ICategory;
+  console.log(body);
+  if (res.ok) return body as ICategoryItem;
 
   const error = new Error(`카테고리 조회 실패`);
   throw error;
@@ -16,7 +19,7 @@ export async function fetchCategory(): Promise<ICategory> {
 
 export async function fetchCategoryInModel(categoryIdx: number): Promise<ICategory> {
   const res = await fetch(
-    `${process.env.API_BASE_URL}/model/category/${categoryIdx}`,
+    `/proxy/model/category/${categoryIdx}`,
     { method: "GET", headers: { Accept: "application/json" } }
   );
 

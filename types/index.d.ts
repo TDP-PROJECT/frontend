@@ -6,14 +6,15 @@ interface IPart {
   descript: string;
 }
 
+interface ICategoryItem {
+  idx: number;
+  name: string;
+  image: string;
+}
+
 interface ICategory {
   totalCount: number;
-  contents: [{
-    idx: number;
-    name: string;
-    image?: string;
-  }
-  ]
+  contents: ICategoryItem[];
 };
 
 
