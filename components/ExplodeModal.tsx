@@ -10,19 +10,20 @@ import {
 import ActionButton from "./ActionButton"
 import { Button } from "./ui/button"
 import { Slider } from "./ui/slider"
-import { Dispatch, SetStateAction, useState } from "react"
+import { Dispatch, SetStateAction } from "react"
 import clsx from "clsx"
+import { AXIS_OPTIONS } from "@/constant"
 
 interface Props {
   explode: number;
   setExplode: Dispatch<SetStateAction<number>>;
   level: number;
   setLevel: Dispatch<SetStateAction<number>>;
+  axis: AxisType;
+  setAxis: Dispatch<SetStateAction<AxisType>>;
 }
 
-export function ExplodeModal({ explode, setExplode, level, setLevel }: Props) {
-  const [axis, setAxis] = useState("중앙")
-  const axisGroup = ['중앙', 'X축', 'Y축', 'Z축']
+export function ExplodeModal({ explode, setExplode, level, setLevel, setAxis, axis }: Props) {
   return (
     <Dialog modal={false}>
       <form>
@@ -33,7 +34,8 @@ export function ExplodeModal({ explode, setExplode, level, setLevel }: Props) {
           <DialogHeader className="flex flex-col gap-4">
             <DialogTitle>분해</DialogTitle>
             <DialogDescription className="grid grid-cols-4 gap-2">
-              {axisGroup.map((ax, idx) => <Button type="button" onClick={() => setAxis(ax)} key={idx} variant="outline" className={clsx(axis === ax && 'bg-gray-100 font-semibold')}>{ax}</Button>)}
+              {AXIS_OPTIONS.map((ax, idx) => <Button type="button" onClick={() => setAxis(ax.value)}
+                key={idx} variant="outline" className={clsx(axis === ax.value && 'bg-gray-100 font-semibold')}>{ax.label}</Button>)}
             </DialogDescription>
           </DialogHeader>
           <Slider

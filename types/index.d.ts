@@ -16,6 +16,9 @@ interface ICategory {
   ]
 };
 
+
+type AxisType = 'Center' | 'X' | 'Y' | 'Z'
+
 type TabType = "기계공학" | "생명공학" | "의공학";
 
 // 우측패널

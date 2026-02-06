@@ -17,7 +17,7 @@ export default function ThreeView() {
   const originalPositions = useRef<Map<string, THREE.Vector3>>(new Map());
   const originalColors = useRef<Map<string, THREE.Color>>(new Map());
   const [resetKey, setResetKey] = useState(0);
-
+  const [axis, setAxis] = useState<AxisType>("Center")
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const controlsRef = useRef<OrbitControlsImpl | null>(null);
 
@@ -88,6 +88,7 @@ export default function ThreeView() {
           originalPositions={originalPositions}
           level={level}
           resetKey={resetKey}
+          axis={axis}
         />
       </Canvas>
 
@@ -95,7 +96,7 @@ export default function ThreeView() {
       <div className="fixed bottom-6 left-1/2 -translate-x-1/2 flex gap-1">
         <ActionButton icon="/icons/Home.svg" label="홈" />
         <ActionButton icon="/icons/See.svg" label="보기" />
-        <ExplodeModal explode={explode} setExplode={setExplode} level={level} setLevel={setLevel} />
+        <ExplodeModal explode={explode} setExplode={setExplode} level={level} setLevel={setLevel} setAxis={setAxis} axis={axis} />
         <ActionButton icon="/icons/Reset.svg" label="초기화" onClick={onReset} />
       </div>
     </div>
