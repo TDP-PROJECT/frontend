@@ -6,14 +6,13 @@ type ErrorResponse = {
   status: number;
   code: string;
   message: string;
-}
-
+};
 
 export async function fetchUser(userId: string): Promise<UserResponse> {
-  const res = await fetch(
-    `${process.env.API_BASE_URL}/user/${encodeURIComponent(userId)}`,
-    { method: "GET", headers: { Accept: "application/json" } }
-  );
+  const res = await fetch(`/proxy/user/${encodeURIComponent(userId)}`, {
+    method: "GET",
+    headers: { Accept: "application/json" }
+  });
 
   const body = await res.json().catch(() => null);
   if (res.ok) return body as UserResponse;
@@ -26,13 +25,13 @@ export async function fetchUser(userId: string): Promise<UserResponse> {
 }
 
 export async function createUser(userId: string): Promise<void> {
-  const res = await fetch(`${process.env.API_BASE_URL}/user`, {
+  const res = await fetch(`/proxy/user`, {
     method: "POST",
     headers: {
       Accept: "application/json",
-      "Content-Type": "application/json",
+      "Content-Type": "application/json"
     },
-    body: JSON.stringify({ userId }),
+    body: JSON.stringify({ userId })
   });
   if (res.ok) return;
 
