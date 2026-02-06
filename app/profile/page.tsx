@@ -4,7 +4,6 @@ import { createUser, fetchUser } from "@/lib/api/user";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-
 export default function ProfilePage() {
   const [userId, setUserId] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -15,7 +14,7 @@ export default function ProfilePage() {
     setLoading(true);
     setError(null);
     try {
-      // 유저 조회 
+      // 유저 조회
       const user = await fetchUser(userId);
       localStorage.setItem("userId", user.userId);
       router.replace("/select");
