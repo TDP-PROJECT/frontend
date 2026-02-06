@@ -8,6 +8,7 @@ import * as THREE from "three";
 import { Model } from "./ModelLoader ";
 import ActionButton from "../ActionButton";
 import { ExplodeModal } from "../ExplodeModal";
+import { useRouter } from "next/navigation";
 
 export default function ThreeView() {
   const [modelPath] = useState("/models/Engine2.glb");
@@ -20,7 +21,7 @@ export default function ThreeView() {
   const [axis, setAxis] = useState<AxisType>("Center")
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const controlsRef = useRef<OrbitControlsImpl | null>(null);
-
+  const router = useRouter();
   //최초 카메라 상태 저장
   const initialCamPos = useRef<THREE.Vector3 | null>(null);
   const initialCamQuat = useRef<THREE.Quaternion | null>(null);
@@ -63,7 +64,7 @@ export default function ThreeView() {
     resetCamera();
   };
   return (
-    <div className="w-full h-full relative">
+    <div className="w-full h-full relative bg-gray-100">
       <Canvas
         camera={{ position: [2, 5, 5], fov: 35 }}
         onCreated={({ camera }) => {
@@ -94,7 +95,7 @@ export default function ThreeView() {
 
 
       <div className="fixed bottom-6 left-1/2 -translate-x-1/2 flex gap-1">
-        <ActionButton icon="/icons/Home.svg" label="홈" />
+        <ActionButton icon="/icons/Home.svg" label="홈" onClick={() => router.push('/select')} />
         <ActionButton icon="/icons/See.svg" label="보기" />
         <ExplodeModal explode={explode} setExplode={setExplode} level={level} setLevel={setLevel} setAxis={setAxis} axis={axis} />
         <ActionButton icon="/icons/Reset.svg" label="초기화" onClick={onReset} />

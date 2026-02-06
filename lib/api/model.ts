@@ -2,7 +2,7 @@
 
 export async function fetchCategory(): Promise<ICategory> {
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/model/category}`,
+    `${process.env.API_BASE_URL}/model/category}`,
     { method: "GET", headers: { Accept: "application/json" }, next: { revalidate: 60 } }
   );
 
@@ -16,7 +16,7 @@ export async function fetchCategory(): Promise<ICategory> {
 
 export async function fetchCategoryInModel(categoryIdx: number): Promise<ICategory> {
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/model/category/${categoryIdx}`,
+    `${process.env.API_BASE_URL}/model/category/${categoryIdx}`,
     { method: "GET", headers: { Accept: "application/json" } }
   );
 
