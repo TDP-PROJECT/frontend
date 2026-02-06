@@ -13,6 +13,7 @@ export default function ThreeView() {
   const [modelPath] = useState("/models/Engine2.glb");
   const [selectedUuid, setSelectedUuid] = useState<string | null>(null);
   const [explode, setExplode] = useState(0);
+  const [level, setLevel] = useState(1);
   const originalPositions = useRef<Map<string, THREE.Vector3>>(new Map());
   const originalColors = useRef<Map<string, THREE.Color>>(new Map());
   const [resetKey, setResetKey] = useState(0);
@@ -85,29 +86,16 @@ export default function ThreeView() {
           setSelectedUuid={setSelectedUuid}
           originalColors={originalColors}
           originalPositions={originalPositions}
+          level={level}
           resetKey={resetKey}
         />
       </Canvas>
 
-      <input
-        type="range"
-        min={0}
-        max={1}
-        step={0.01}
-        value={explode}
-        onChange={(e) => setExplode(Number(e.target.value))}
-        style={{
-          position: "absolute",
-          bottom: 40,
-          left: "50%",
-          transform: "translateX(-50%)",
-          width: "300px",
-        }}
-      />
+
       <div className="fixed bottom-6 left-1/2 -translate-x-1/2 flex gap-1">
         <ActionButton icon="/icons/Home.svg" label="홈" />
         <ActionButton icon="/icons/See.svg" label="보기" />
-        <ExplodeModal />
+        <ExplodeModal explode={explode} setExplode={setExplode} level={level} setLevel={setLevel} />
         <ActionButton icon="/icons/Reset.svg" label="초기화" onClick={onReset} />
       </div>
     </div>

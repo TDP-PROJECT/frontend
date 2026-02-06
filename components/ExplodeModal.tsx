@@ -10,10 +10,17 @@ import {
 import ActionButton from "./ActionButton"
 import { Button } from "./ui/button"
 import { Slider } from "./ui/slider"
-import { useState } from "react"
+import { Dispatch, SetStateAction, useState } from "react"
 import clsx from "clsx"
 
-export function ExplodeModal() {
+interface Props {
+  explode: number;
+  setExplode: Dispatch<SetStateAction<number>>;
+  level: number;
+  setLevel: Dispatch<SetStateAction<number>>;
+}
+
+export function ExplodeModal({ explode, setExplode, level, setLevel }: Props) {
   const [axis, setAxis] = useState("중앙")
   const axisGroup = ['중앙', 'X축', 'Y축', 'Z축']
   return (
@@ -26,19 +33,21 @@ export function ExplodeModal() {
           <DialogHeader className="flex flex-col gap-4">
             <DialogTitle>분해</DialogTitle>
             <DialogDescription className="grid grid-cols-4 gap-2">
-              {axisGroup.map((ax, idx) => <Button onClick={() => setAxis(ax)} key={idx} variant="outline" className={clsx(axis === ax && 'bg-gray-100 font-semibold')}>{ax}</Button>)}
+              {axisGroup.map((ax, idx) => <Button type="button" onClick={() => setAxis(ax)} key={idx} variant="outline" className={clsx(axis === ax && 'bg-gray-100 font-semibold')}>{ax}</Button>)}
             </DialogDescription>
           </DialogHeader>
           <Slider
-            defaultValue={[0]}
-            max={100}
-            step={1}
+            value={[explode]}
+            onValueChange={(v) => setExplode(v[0])}
+            max={1}
+            step={0.1}
             className="mx-auto w-full max-w-xs py-2"
           />
           <div className="flex justify-between w-full max-w-xs">
             <p>레벨</p>
             <div>
-              <select className="w-10" >
+              <select className="w-10" value={String(level)}
+                onChange={(e) => setLevel(Number(e.target.value))}  >
                 <option value="1">1</option>
                 <option value="2">2</option>
                 <option value="3">3</option>
@@ -50,6 +59,6 @@ export function ExplodeModal() {
           </div>
         </DialogContent>
       </form>
-    </Dialog>
+    </Dialog >
   )
 }
