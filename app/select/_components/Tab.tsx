@@ -1,10 +1,8 @@
 import { Dispatch, SetStateAction } from "react";
 
 type Props = {
-  //selectedTab: number;
-  //setSelectedTab: Dispatch<SetStateAction<number>>;
-  selectedTab: string;
-  setSelectedTab: Dispatch<SetStateAction<TabType>>;
+  selectedTab: number;
+  setSelectedTab: Dispatch<SetStateAction<number>>;
   category: ICategory
 };
 
@@ -12,7 +10,7 @@ export default function Tab({ selectedTab, setSelectedTab, category }: Props) {
 
   return (
     <div className="flex justify-center items-center">
-      {/* <div className="flex bg-white border rounded-2xl overflow-hidden">
+      <div className="flex bg-white border rounded-2xl overflow-hidden">
         {category.contents.map((cate) =>
           <button
             key={cate.idx}
@@ -21,8 +19,8 @@ export default function Tab({ selectedTab, setSelectedTab, category }: Props) {
               ${selectedTab === cate.idx ? "bg-black text-white" : "bg-white text-black"}`}>
             {cate.name}
           </button>)}
-      </div> */}
-      <div className="flex bg-white  overflow-hidden border rounded-2xl ">
+      </div>
+      {/* <div className="flex bg-white  overflow-hidden border rounded-2xl ">
         {['기계공학', '생명공학', '의공학'].map((cate, idx) =>
           <button
             key={idx}
@@ -34,7 +32,7 @@ export default function Tab({ selectedTab, setSelectedTab, category }: Props) {
             {cate}
           </button>)}
 
-      </div>
-    </div>
+      </div> */}
+    </div >
   );
 }
