@@ -27,7 +27,7 @@ interface IModelParts {
   idx: number;
   name: string;
   image: string;
-  statusInfo: string;
+  statusInfo?: string;
   description: string;
 }
 
