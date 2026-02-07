@@ -68,3 +68,21 @@ export async function updateMemo({
       : undefined;
   throw new Error(errMessage || "메모 생성 실패");
 }
+
+export async function deleteMemo({ userIdx, modelIdx, memoIdx }: MemoDeleteRequest): Promise<void> {
+  const res = await fetch(`/proxy/model/${modelIdx}/user/${userIdx}/memo/${memoIdx}`, {
+    method: "DELETE",
+    headers: {
+      Accept: "application/json"
+    }
+  });
+
+  const body = await res.json().catch(() => null);
+  if (res.ok) return;
+
+  const errMessage =
+    body && typeof body === "object" && "message" in body
+      ? (body as { message: string }).message
+      : undefined;
+  throw new Error(errMessage || "메모 생성 실패");
+}

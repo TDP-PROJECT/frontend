@@ -59,3 +59,8 @@ type MemoUpdateRequest = {
   memoIdx: number;
   memo: string;
 };
+type MemoDeleteRequest = {
+  userIdx: number;
+  modelIdx: number;
+  memoIdx: number;
+};

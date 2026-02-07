@@ -3,6 +3,7 @@
 import { Dispatch, SetStateAction, useRef, useState, useEffect } from "react";
 import { makeMemo, updateMemo } from "@/lib/api/memo";
 import { useSearchParams } from "next/navigation";
+import useDebounce from "@/lib/hook/useDebounce";
 
 type Props = {
   uiType: RightPannelUIType;
@@ -25,21 +26,26 @@ export default function MemoContent({
 }: Props) {
   const userIdx =
     typeof window !== "undefined" ? JSON.parse(localStorage.getItem("user") ?? "{}")?.idx : "";
-
   const searchParams = useSearchParams();
   const modelIdx = searchParams.get("modelIdx") ? parseInt(searchParams.get("modelIdx")!) : 0;
 
   const [inputValue, setInputValue] = useState("");
+  const debouncedInputValue = useDebounce(inputValue, 500);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // selectedMemo가 변경되면 inputValue 업데이트
   useEffect(() => {
-    if (selectedMemo) {
-      setInputValue(selectedMemo.memo || "");
+    console.log("selectedMemo", selectedMemo);
+    console.log("memoIdx", memoIdx);
+    if (memoIdx !== null && selectedMemo) {
+      setInputValue(selectedMemo?.memo || "");
     } else {
+      console.log("selectedMemo 초기화", selectedMemo);
       setInputValue("");
     }
-  }, [selectedMemo]);
+  }, [memoIdx, selectedMemo]);
+
+  // setMemoIdx(null);
 
   // 입력 시작 시 패널 확장
   useEffect(() => {
@@ -60,59 +66,49 @@ export default function MemoContent({
     }
   }, [uiType]);
 
-  // 디바운스된 저장 함수
-  const saveMemoRef = useRef<((value: string) => Promise<void>) | null>(null);
-
+  // debouncedInputValue가 변경될 때마다 저장 (useDebounce로 500ms 지연된 값)
   useEffect(() => {
-    saveMemoRef.current = async (value: string) => {
-      if (!value.trim() || !userIdx) return;
+    console.log("debouncedInputValue", debouncedInputValue);
+    console.log("userIdx", userIdx);
+    if (!userIdx) return;
 
+    const save = async () => {
       try {
+        console.log("save");
         if (memoIdx === null || memoIdx === undefined) {
-          // 새 메모 생성
           const res = await makeMemo({
             userIdx: parseInt(userIdx),
-            memo: value,
+            memo: debouncedInputValue,
             modelIdx
           });
           setMemoIdx(res.idx);
-          // memoList에 추가
-          setMemoList((prev) => [{ idx: res.idx, memo: value }, ...prev]);
+          setMemoList((prev) => [{ idx: res.idx, memo: debouncedInputValue }, ...prev]);
         } else {
-          // 기존 메모 업데이트
           await updateMemo({
             userIdx: parseInt(userIdx),
-            memo: value,
+            memo: debouncedInputValue,
             modelIdx,
             memoIdx
           });
-          // memoList 업데이트
           setMemoList((prev) =>
-            prev.map((memo) => (memo.idx === memoIdx ? { ...memo, memo: value } : memo))
+            prev.map((memo) =>
+              memo.idx === memoIdx ? { ...memo, memo: debouncedInputValue } : memo
+            )
           );
         }
       } catch (error) {
         console.error("메모 저장 실패:", error);
       }
     };
-  }, [memoIdx, userIdx, modelIdx, setMemoIdx, setMemoList]);
-
-  // inputValue 변경 시 디바운스된 저장 실행 (ref는 effect/타이머 안에서만 접근)
-  useEffect(() => {
-    if (!inputValue.trim()) return;
-
-    const timeoutId = setTimeout(() => {
-      saveMemoRef.current?.(inputValue);
-    }, 500);
-
-    return () => clearTimeout(timeoutId);
-  }, [inputValue]);
+    save();
+  }, [debouncedInputValue]);
 
   return (
     <div
       className={`flex flex-col h-full min-h-0 ${uiType === "default" ? "justify-end" : "justify-start"}`}
     >
       <textarea
+        id="memoInput"
         ref={textareaRef}
         value={inputValue}
         onChange={(e) => setInputValue(e.target.value)}
@@ -120,7 +116,7 @@ export default function MemoContent({
         className={`w-full resize-none px-4 py-2 text-[15px] leading-6 placeholder:text-gray-400 outline-none ${
           uiType === "expanded" ? "flex-1 min-h-0" : ""
         }`}
-        style={{ height: uiType === "expanded" ? "100%" : MIN_HEIGHT }}
+        style={{ height: uiType !== "default" ? "100%" : MIN_HEIGHT }}
       />
     </div>
   );

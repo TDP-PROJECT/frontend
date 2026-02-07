@@ -1,4 +1,6 @@
+import { deleteMemo } from "@/lib/api/memo";
 import Image from "next/image";
+import { useSearchParams } from "next/navigation";
 import { Dispatch, SetStateAction } from "react";
 
 type Props = {
@@ -16,7 +18,6 @@ type Props = {
 };
 
 // 일단 더미데이터
-
 const searchChatList: ChatContent[] = [
   {
     roomId: "1",
@@ -52,6 +53,11 @@ export default function RightPannelSidebar({
   memoIdx,
   setMemoIdx //데이터 관련
 }: Props) {
+  const userIdx =
+    typeof window !== "undefined" ? JSON.parse(localStorage.getItem("user") ?? "{}")?.idx : "";
+  const searchParams = useSearchParams();
+  const modelIdx = searchParams.get("modelIdx") ? parseInt(searchParams.get("modelIdx")!) : 0;
+
   const onClickSideBarBtn = () => {
     setUiType(uiType === "full" ? "expanded" : "full");
     if (uiType == "full" && sideContentType === "search") {
@@ -66,12 +72,10 @@ export default function RightPannelSidebar({
       setRoomId("");
       document.getElementById("aiChatInput")?.focus();
     }
-    // 메모면 메모장 창 열기
-
-    //  걍똑같을듯한
-    if (uiType !== "default") {
-      //  ai 어시스턴트 + 기존 컨텍스트가 있다면 (그거까지 저장하고.?) =>  새로운 컨텍스트 열기
-      // 메모 + 쓰고있는 메모가 있다면 (그거까지 저장하고.?) => 새로운 메모 열기
+    // 메모
+    if (contentType === "메모장" && memoIdx !== null) {
+      setMemoIdx(null);
+      document.getElementById("memoInput")?.focus();
     }
   };
 
@@ -83,6 +87,15 @@ export default function RightPannelSidebar({
   const onClickXBtn = () => {
     setSideContentType("history");
     // 검색어 다 지우기
+  };
+
+  const onClickMemoDeleteBtn = (memoIdx: number) => {
+    deleteMemo({ userIdx: Number(userIdx), modelIdx: Number(modelIdx), memoIdx });
+  };
+
+  // TODO: 채팅 삭제 api 추가 및 연동 필요
+  const onClickChatDeleteBtn = (roomId: string) => {
+    // deleteChat({ userIdx: Number(userIdx), modelIdx: Number(modelIdx), roomId });
   };
 
   return (
@@ -132,9 +145,18 @@ export default function RightPannelSidebar({
               <li
                 key={item.roomId}
                 onClick={() => setRoomId(item.roomId)}
-                className={`cursor-pointer ${roomId === item.roomId ? "bg-gray-100" : ""} px-2.5 leading-[38px] mr-4 rounded-lg hover:bg-gray-50`}
+                className={`group cursor-pointer ${roomId === item.roomId ? "bg-gray-100" : ""} px-2.5 leading-[38px] mr-4 rounded-lg hover:bg-gray-50`}
               >
-                <p className="max-w-[155px] truncate">{item.messages?.[0]?.message}</p>
+                <p className={`group-hover:max-w-[120px] max-w-[155px] truncate h-[38px] `}>
+                  {item.messages?.[0]?.message}
+                </p>
+                <button
+                  role="button"
+                  className="absolute right-1.5 top-2 hidden group-hover:block"
+                  onClick={() => onClickChatDeleteBtn(item.roomId)}
+                >
+                  <Image src={"/icons/Trash.svg"} alt="삭제" width={20} height={20} />
+                </button>
               </li>
             ))}
 
@@ -143,9 +165,18 @@ export default function RightPannelSidebar({
               <li
                 key={item.idx}
                 onClick={() => setMemoIdx(item.idx)}
-                className={`cursor-pointer ${memoIdx === item.idx ? "bg-gray-100" : ""} px-2.5 leading-[38px] mr-4 rounded-lg hover:bg-gray-50`}
+                className={`group cursor-pointer ${memoIdx === item.idx ? "bg-gray-100" : ""} px-2.5 leading-[38px] mr-4 rounded-lg hover:bg-gray-50 relative`}
               >
-                <p className="max-w-[155px] truncate">{item.memo}</p>
+                <p className={`group-hover:max-w-[120px] max-w-[155px] truncate h-[38px] `}>
+                  {item.memo || "내용 없음"}
+                </p>
+                <button
+                  role="button"
+                  className="absolute right-1.5 top-2 hidden group-hover:block"
+                  onClick={() => onClickMemoDeleteBtn(item.idx)}
+                >
+                  <Image src={"/icons/Trash.svg"} alt="삭제" width={20} height={20} />
+                </button>
               </li>
             ))}
         </ul>
