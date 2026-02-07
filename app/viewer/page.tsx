@@ -1,7 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import ThreeViewer from "@/components/ThreeViewer";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import SelectBox from "@/components/SelectBox";
@@ -9,24 +8,49 @@ import { PartListMock } from "@/constant";
 import DetailBox from "@/components/DetailBox";
 import RightPannel from "@/components/RightPannel/RightPannel";
 import ThreeView from "@/components/ThreeView/ThreeView";
+import { fetchModelByIdx } from "@/lib/api/model";
 
 export default function ViewerPage() {
   const searchParams = useSearchParams();
-  const idx = searchParams.get("modelIdx");
   const [isMenu, setIsMenu] = useState(false);
   const [isDetail, setIsDetail] = useState(false);
-  const [selectedPart, setSelectedPart] = useState<IPart | null>(null);
-
-
+  const [selectedPart, setSelectedPart] = useState<IModelParts | null>(null);
+  const [model, setModel] = useState<IModelDetail | null>(null);
+  const modelIdx = Number(searchParams.get("modelIdx"));
+  const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState<IUser | null>(null);
   const hnadleMenuClose = () => {
     setIsMenu(!isMenu);
     setIsDetail(false);
   };
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("user") ?? "{}");
+    setUser(user);
+  }, []);
+
+  useEffect(() => {
+    console.log(modelIdx, user?.idx);
+    if (!modelIdx || !user?.idx) return;
+    setLoading(true);
+    const fetchModel = async () => {
+      try {
+        const data = await fetchModelByIdx({ userIdx: Number(user?.idx), modelIdx });
+        setModel(data);
+        console.log(data);
+      } catch (error) {
+        setModel(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchModel();
+  }, [modelIdx, user?.idx]);
+
   return (
     <div className="flex w-screen h-screen px-2">
       <div className="absolute top-20 left-4 w-96 z-1">
         <div className="w-96 h-20 shadow-lg flex justify-between items-center px-7 bg-white rounded-lg">
-          <p className="font-medium">{idx}</p>
+          <p className="font-medium">{model?.name}</p>
           <Image
             className="cursor-pointer"
             onClick={hnadleMenuClose}
@@ -45,6 +69,7 @@ export default function ViewerPage() {
             setIsMenu={setIsMenu}
             setSelectedPart={setSelectedPart}
             setIsDetail={setIsDetail}
+            model={model}
           />
         </div>
         <div

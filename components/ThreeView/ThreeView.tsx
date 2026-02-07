@@ -2,29 +2,23 @@
 
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import * as THREE from "three";
 import { Model } from "./ModelLoader ";
 import ActionButton from "../ActionButton";
 import { ExplodeModal } from "../ExplodeModal";
-import { useRouter, useSearchParams } from "next/navigation";
-import { fetchModelByIdx } from "@/lib/api/model";
+import { useRouter } from "next/navigation";
 
 export default function ThreeView() {
   const [modelPath] = useState("/models/Engine2.glb");
-  const [model, setModel] = useState<IModelDetail | null>(null);
-  const searchParmas = useSearchParams();
-  const modelIdx = Number(searchParmas.get('modelIdx'));
-  const [loading, setLoading] = useState(false);
   const [selectedUuid, setSelectedUuid] = useState<string | null>(null);
   const [explode, setExplode] = useState(0);
   const [level, setLevel] = useState(1);
   const originalPositions = useRef<Map<string, THREE.Vector3>>(new Map());
   const originalColors = useRef<Map<string, THREE.Color>>(new Map());
   const [resetKey, setResetKey] = useState(0);
-  const [axis, setAxis] = useState<AxisType>("Center")
-  const [user, setUser] = useState<IUser | null>(null);
+  const [axis, setAxis] = useState<AxisType>("Center");
 
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const controlsRef = useRef<OrbitControlsImpl | null>(null);
@@ -34,10 +28,6 @@ export default function ThreeView() {
   const initialCamQuat = useRef<THREE.Quaternion | null>(null);
   const initialTarget = useRef<THREE.Vector3 | null>(null);
 
-  useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("user") ?? "{}");
-    setUser(user);
-  }, []);
   const captureInitialCamera = () => {
     const cam = cameraRef.current;
     const ctrls = controlsRef.current;
@@ -75,25 +65,6 @@ export default function ThreeView() {
     resetCamera();
   };
 
-  useEffect(() => {
-    console.log(modelIdx, user?.idx);
-    if (!modelIdx || !user?.idx) return;
-    setLoading(true);
-    const fetchModel = async () => {
-      try {
-        const data = await fetchModelByIdx({ userIdx: Number(user?.idx), modelIdx })
-        setModel(data);
-        console.log(data);
-      }
-      catch (error) {
-        setModel(null);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchModel();
-  }, [modelIdx, user?.idx]);
-
   return (
     <div className="w-full h-full relative bg-gray-100">
       <Canvas
@@ -106,11 +77,13 @@ export default function ThreeView() {
       >
         <ambientLight intensity={0.5} />
         <directionalLight position={[5, 6, 5]} intensity={1.2} />
-        <OrbitControls makeDefault
+        <OrbitControls
+          makeDefault
           ref={(c) => {
             controlsRef.current = c as unknown as OrbitControlsImpl;
             captureInitialCamera();
-          }} />
+          }}
+        />
         <Model
           modelPath={modelPath}
           explode={explode}
@@ -124,11 +97,17 @@ export default function ThreeView() {
         />
       </Canvas>
 
-
       <div className="fixed bottom-6 left-1/2 -translate-x-1/2 flex gap-1">
-        <ActionButton icon="/icons/Home.svg" label="홈" onClick={() => router.push('/select')} />
+        <ActionButton icon="/icons/Home.svg" label="홈" onClick={() => router.push("/select")} />
         <ActionButton icon="/icons/See.svg" label="보기" />
-        <ExplodeModal explode={explode} setExplode={setExplode} level={level} setLevel={setLevel} setAxis={setAxis} axis={axis} />
+        <ExplodeModal
+          explode={explode}
+          setExplode={setExplode}
+          level={level}
+          setLevel={setLevel}
+          setAxis={setAxis}
+          axis={axis}
+        />
         <ActionButton icon="/icons/Reset.svg" label="초기화" onClick={onReset} />
       </div>
     </div>

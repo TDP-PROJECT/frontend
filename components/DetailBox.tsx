@@ -2,7 +2,7 @@ import Image from "next/image";
 import { Dispatch, SetStateAction } from "react";
 
 interface Props {
-  selectedPart: IPart;
+  selectedPart: IModelParts;
   isDetail: boolean;
   setIsDetail: Dispatch<SetStateAction<boolean>>;
 }
@@ -32,16 +32,18 @@ export default function DetailBox({ selectedPart, isDetail, setIsDetail }: Props
       </div>
       <div className="flex gap-4 items-center">
         <p>부품 명칭</p>
-        <p>{selectedPart.title}</p>
+        <p>{selectedPart.name}</p>
       </div>
-      <div className="flex gap-4 items-center">
-        <p>상태 정보</p>
-        <p>{selectedPart.status}</p>
-      </div>
+      {selectedPart.statusInfo && (
+        <div className="flex gap-4 items-center">
+          <p>상태 정보</p>
+          <p>{selectedPart.statusInfo}</p>
+        </div>
+      )}
       <hr className="text-gray-300 " />
       <div>
         <p>핵심 설명</p>
-        <p>{selectedPart.descript}</p>
+        <p>{selectedPart.description}</p>
       </div>
     </div>
   );
