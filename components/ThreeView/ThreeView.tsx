@@ -26,7 +26,7 @@ interface Props {
 }
 
 export default function ThreeView({ setSelectedName, selectedName, user, modelIdx }: Props) {
-  const [modelPath] = useState("/models/Drone2.glb");
+  const [modelPath] = useState("/models/Engine5.glb");
   const [explode, setExplode] = useState(0);
   const [level, setLevel] = useState(1);
   const originalPositions = useRef<Map<string, THREE.Vector3>>(new Map());
@@ -118,14 +118,15 @@ export default function ThreeView({ setSelectedName, selectedName, user, modelId
     if (!snap || !user || !modelIdx) return;
 
     const payload = {
-      model: modelIdx,
-      meta: snap
+      modelIdx,
+      meta: typeof snap === "string" ? snap : JSON.stringify(snap)
     };
 
+    const userId = encodeURIComponent(String(user.idx ?? user.idx));
     try {
-      const res = await fetch(`/proxy/user/${user.userId}/model-view`, {
+      const res = await fetch(`/proxy/user/${userId}/model-view`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify(payload)
       });
       if (!res.ok) {
