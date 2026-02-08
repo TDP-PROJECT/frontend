@@ -76,6 +76,7 @@ export default function RightPannel() {
         sideContentType={sideContentType}
         setSideContentType={setSideContentType}
         chatList={chatList}
+        setChatList={setChatList}
         roomId={roomId}
         setRoomId={setRoomId}
         memoList={memoList}
