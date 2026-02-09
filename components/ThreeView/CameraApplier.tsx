@@ -12,8 +12,10 @@ export function CameraApplier({
   cameraRef: React.MutableRefObject<THREE.PerspectiveCamera | null>;
   controlsRef: React.MutableRefObject<ThreeOrbitControls | null>;
 }) {
+  //three.js에게 다시 한 프레임 렌더시킴.
   const { invalidate } = useThree();
 
+  //snap이 바뀔 때마다 실행
   useEffect(() => {
     if (!snap) return;
     const cam = cameraRef.current;

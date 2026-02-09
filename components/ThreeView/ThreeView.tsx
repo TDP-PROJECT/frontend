@@ -30,24 +30,36 @@ interface Props {
 
 export default function ThreeView({ setSelectedName, selectedName, user, modelIdx, model }: Props) {
   const [modelPath] = useState("/models/Drone3.glb");
+
+  // 모델 분해 상태
   const [explode, setExplode] = useState(0);
   const [level, setLevel] = useState(1);
+  const [axis, setAxis] = useState<AxisType>("Center");
+
+  //원본 기준 데이터
   const originalPositions = useRef<Map<string, THREE.Vector3>>(new Map());
   const originalColors = useRef<Map<string, THREE.Color>>(new Map());
-  const [resetKey, setResetKey] = useState(0);
-  const [axis, setAxis] = useState<AxisType>("Center");
+
+  //모델 준비 타이밍 제어
   const [modelReady, setModelReady] = useState(false);
   const [readyVersion, setReadyVersion] = useState(0);
   const appliedVersionRef = useRef(0);
+  // 리셋키
+  const [resetKey, setResetKey] = useState(0);
   const [cameraSnap, setCameraSnap] = useState<ViewerState | null>(null);
+
+  //카메라 관련 refs
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const controlsRef = useRef<ThreeOrbitControls | null>(null);
+
+  //router
   const router = useRouter();
   //최초 카메라 상태 저장
   const initialCamPos = useRef<THREE.Vector3 | null>(null);
   const initialCamQuat = useRef<THREE.Quaternion | null>(null);
   const initialTarget = useRef<THREE.Vector3 | null>(null);
 
+  //카메라 초기상태 캡처
   const captureInitialCamera = () => {
     const cam = cameraRef.current;
     const ctrls = controlsRef.current;
@@ -60,6 +72,7 @@ export default function ThreeView({ setSelectedName, selectedName, user, modelId
     }
   };
 
+  //카메라 리셋
   const resetCamera = () => {
     const cam = cameraRef.current;
     const ctrls = controlsRef.current;
@@ -78,6 +91,7 @@ export default function ThreeView({ setSelectedName, selectedName, user, modelId
     ctrls.update();
   };
 
+  //리셋 함수 (분해도,카메라,클릭한 메쉬)
   const onReset = () => {
     setExplode(0);
     setSelectedName(null);
@@ -86,6 +100,7 @@ export default function ThreeView({ setSelectedName, selectedName, user, modelId
     requestAnimationFrame(() => postSnapshot());
   };
 
+  //캔버스 ref
   const canvasElRef = useRef<HTMLCanvasElement | null>(null);
 
   const stateRef = useRef({ explode, level, axis, selectedName });
@@ -93,6 +108,7 @@ export default function ThreeView({ setSelectedName, selectedName, user, modelId
     stateRef.current = { explode, level, axis, selectedName };
   }, [explode, level, axis, selectedName]);
 
+  // meta에 들어갈 정보
   const buildSnapshot = useCallback((): ViewerState | null => {
     const cam = cameraRef.current;
     const ctrls = controlsRef.current;
@@ -119,6 +135,7 @@ export default function ThreeView({ setSelectedName, selectedName, user, modelId
     };
   }, [modelPath]);
 
+  // api (model-view)
   const postSnapshot = useCallback(async () => {
     const snap = buildSnapshot();
     if (!snap || !user || !modelIdx) return;
@@ -150,7 +167,7 @@ export default function ThreeView({ setSelectedName, selectedName, user, modelId
     });
   }, [postSnapshot]);
 
-  // gl.domElement에만 이벤트 걸기 + cleanup
+  // gl.domElement에만 이벤트 걸기
   const attachCanvasListeners = useCallback(
     (canvas: HTMLCanvasElement) => {
       canvas.addEventListener("click", onAnyCanvasClick, { passive: true });
@@ -173,27 +190,7 @@ export default function ThreeView({ setSelectedName, selectedName, user, modelId
     return () => detachCanvasListeners(canvas);
   }, [attachCanvasListeners, detachCanvasListeners]);
 
-  const applyCameraSnapshot = useCallback((snap: ViewerState) => {
-    const cam = cameraRef.current;
-    const ctrls = controlsRef.current;
-    if (!cam || !ctrls) return;
-
-    const [px, py, pz] = snap.camera.position;
-    const [qx, qy, qz, qw] = snap.camera.quaternion;
-    const [tx, ty, tz] = snap.controls.target;
-
-    cam.position.set(px, py, pz);
-    cam.quaternion.set(qx, qy, qz, qw);
-
-    cam.fov = snap.camera.fov;
-    cam.zoom = snap.camera.zoom;
-
-    cam.updateProjectionMatrix();
-
-    ctrls.target.set(tx, ty, tz);
-    ctrls.update();
-  }, []);
-
+  //서버 스냅샷을 중복 없이 1회 적용
   useEffect(() => {
     if (!model?.meta) return;
     if (!modelReady) return;
@@ -212,7 +209,7 @@ export default function ThreeView({ setSelectedName, selectedName, user, modelId
     setLevel(1);
     setResetKey((k) => k + 1);
 
-    // ✅ 리셋 effect가 먼저 먹고난 뒤 적용 (2프레임 권장)
+    // 리셋 effect가 먼저 먹고난 뒤 적용
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         setExplode(snap.explode);
