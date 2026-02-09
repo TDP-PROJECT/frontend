@@ -18,6 +18,7 @@ import ActionButton from "../ActionButton";
 import { ExplodeModal } from "../ExplodeModal";
 import { useRouter } from "next/navigation";
 import { parseSnapshot } from "@/constant";
+import { CameraApplier } from "./CameraApplier";
 
 interface Props {
   setSelectedName: Dispatch<SetStateAction<string | null>>;
@@ -38,6 +39,7 @@ export default function ThreeView({ setSelectedName, selectedName, user, modelId
   const [modelReady, setModelReady] = useState(false);
   const [readyVersion, setReadyVersion] = useState(0);
   const appliedVersionRef = useRef(0);
+  const [cameraSnap, setCameraSnap] = useState<ViewerState | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const controlsRef = useRef<ThreeOrbitControls | null>(null);
   const router = useRouter();
@@ -171,17 +173,38 @@ export default function ThreeView({ setSelectedName, selectedName, user, modelId
     return () => detachCanvasListeners(canvas);
   }, [attachCanvasListeners, detachCanvasListeners]);
 
+  const applyCameraSnapshot = useCallback((snap: ViewerState) => {
+    const cam = cameraRef.current;
+    const ctrls = controlsRef.current;
+    if (!cam || !ctrls) return;
+
+    const [px, py, pz] = snap.camera.position;
+    const [qx, qy, qz, qw] = snap.camera.quaternion;
+    const [tx, ty, tz] = snap.controls.target;
+
+    cam.position.set(px, py, pz);
+    cam.quaternion.set(qx, qy, qz, qw);
+
+    cam.fov = snap.camera.fov;
+    cam.zoom = snap.camera.zoom;
+
+    cam.updateProjectionMatrix();
+
+    ctrls.target.set(tx, ty, tz);
+    ctrls.update();
+  }, []);
+
   useEffect(() => {
     if (!model?.meta) return;
     if (!modelReady) return;
 
-    // ✅ 같은 ready에 대해 중복 적용 방지
+    //  같은 ready에 대해 중복 적용 방지
     if (appliedVersionRef.current === readyVersion) return;
     appliedVersionRef.current = readyVersion;
 
     const snap = parseSnapshot(model.meta);
     if (!snap) return;
-
+    setCameraSnap(snap);
     // 리셋 트리거
     setExplode(0);
     setSelectedName(null);
@@ -240,6 +263,7 @@ export default function ThreeView({ setSelectedName, selectedName, user, modelId
             }}
           />
         </Suspense>
+        <CameraApplier snap={cameraSnap} cameraRef={cameraRef} controlsRef={controlsRef} />
       </Canvas>
 
       <div className="fixed bottom-6 left-1/2 -translate-x-1/2 flex gap-1">
