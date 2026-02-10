@@ -289,7 +289,7 @@ export default function ThreeView({
   }, [readyVersion, modelReady, model?.meta, setSelectedName]);
 
   return (
-    <div className="w-full h-full relative bg-[#FBFBFB]">
+    <div className="w-full h-full relative ">
       <Canvas
         camera={{ position: [0, 6, 12], fov: 35 }}
         onCreated={({ camera, gl }) => {
