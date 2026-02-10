@@ -12,7 +12,7 @@ export function Chip({ grade = "입문 지망생", className, ...props }: ChipPr
       role="status"
       className={cn(
         "inline-flex items-center justify-center rounded-lg px-2 py-1  text-[10px] font-semibold",
-        config.className,
+        config?.className,
         className
       )}
       {...props}
