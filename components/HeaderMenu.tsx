@@ -8,6 +8,7 @@ import { clearUserAuth } from "@/lib/auth";
 import { Dialog, DialogContent, DialogFooter, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { MENU_BOTTOM_ITEMS, MENU_TOP_ITEMS } from "@/constant";
+import { Toast } from "@/components/Toast";
 
 export interface HeaderMenuProps {
   onLogout?: () => void;
@@ -38,7 +39,6 @@ export function HeaderMenu({ onLogout }: HeaderMenuProps) {
       router.push(`${item.href}${item.href === "/pdf" ? `?modelIdx=${modelIdx}` : ""}`);
     } else {
       setToastVisible(true);
-      setTimeout(() => setToastVisible(false), 2000);
     }
   };
 
@@ -151,15 +151,7 @@ export function HeaderMenu({ onLogout }: HeaderMenuProps) {
         </DialogContent>
       </Dialog>
 
-      {toastVisible && (
-        <div
-          className="fixed top-8 left-1/2 -translate-x-1/2 z-[100] px-4 py-2.5 rounded-lg bg-gray-700 text-white text-sm font-medium shadow-lg animate-in fade-in duration-200"
-          role="status"
-          aria-live="polite"
-        >
-          열심히 만들고 있어요! 곧 오픈됩니다 🚧
-        </div>
-      )}
+      {toastVisible && <Toast duration={2000} onClose={() => setToastVisible(false)} />}
     </>
   );
 }

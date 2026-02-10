@@ -8,7 +8,7 @@ export function SpatialGrid() {
   const roomHalfSize = 9;
   const gridSize = roomHalfSize * 2; // 격자와 수직선 모서리 맞춤 (±roomHalfSize)
   const gridDivisions = 18;
-  const gridY = 0;
+  const gridY = -1;
   const roomHeight = 18;
   const lineColor = 0xcccccc;
   const lineOpacity = 0.6;
