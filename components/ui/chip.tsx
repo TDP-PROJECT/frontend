@@ -2,11 +2,11 @@ import { cn } from "@/lib/utils";
 import { CHIP_LEVEL_CONFIG, type ChipLevel } from "@/constant";
 
 interface ChipProps extends React.HTMLAttributes<HTMLSpanElement> {
-  level?: ChipLevel;
+  grade?: ChipLevel;
 }
 
-export function Chip({ level = 1, className, ...props }: ChipProps) {
-  const config = CHIP_LEVEL_CONFIG[level];
+export function Chip({ grade = "입문 지망생", className, ...props }: ChipProps) {
+  const config = CHIP_LEVEL_CONFIG[grade];
   return (
     <span
       role="status"
@@ -17,7 +17,7 @@ export function Chip({ level = 1, className, ...props }: ChipProps) {
       )}
       {...props}
     >
-      {config.label}
+      {grade}
     </span>
   );
 }

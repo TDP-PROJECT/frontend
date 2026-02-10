@@ -111,28 +111,22 @@ export function parseSnapshot(meta: string): ViewerState | null {
 }
 
 export const CHIP_LEVEL_CONFIG = {
-  6: {
-    label: "마스터 엔지니어",
+  "마스터 엔지니어": {
     className: "bg-[#FFE4A0] text-[#FF9421]"
   },
-  5: {
-    label: "수석 설계자",
+  "수석 설계자": {
     className: "bg-[#F6E4FF] text-[#AC76CC]"
   },
-  4: {
-    label: "전문 기술자",
+  "전문 기술자": {
     className: "bg-[#FFDFDE] text-[#EA544C]"
   },
-  3: {
-    label: "매커닉",
+  메카닉: {
     className: "bg-[#BBF4F8] text-[#0F9BB6]"
   },
-  2: {
-    label: "테크니션",
+  테크니션: {
     className: "bg-[#C7F2CE] text-[#3D913B]"
   },
-  1: {
-    label: "입문 지망생",
+  "입문 지망생": {
     className: "bg-[#B8E4FF] text-[#335C6F]"
   }
 } as const;

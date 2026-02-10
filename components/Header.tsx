@@ -7,15 +7,25 @@ import { HeaderMenu } from "./HeaderMenu";
 import { Chip } from "./ui/chip";
 import QuizButton from "./QuizButton/QuizButton";
 import { usePathname } from "next/navigation";
+import { fetchUserQuizMe } from "@/lib/api/quiz";
+import { ChipLevel } from "@/constant";
 
 export default function Header() {
   const [user, setUser] = useState<IUser | null>(null);
+  const [grade, setGrade] = useState<ChipLevel | undefined>(undefined);
   const pathname = usePathname();
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user") ?? "{}");
     setUser(user);
   }, []);
+
+  useEffect(() => {
+    if (!user) return;
+    fetchUserQuizMe(user.idx).then((res) => {
+      setGrade(res.currentGrade as ChipLevel);
+    });
+  }, [user]);
 
   return (
     <header
@@ -36,8 +46,7 @@ export default function Header() {
         {user?.userId && (
           <div className="flex gap-2 justify-center items-center">
             <p className="font-semibold text-[10px]">{user.userId}님</p>
-            <Chip />
-            {/* <Chip level={user?.level} /> */}
+            <Chip grade={grade} />
           </div>
         )}
       </div>
