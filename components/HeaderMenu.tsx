@@ -45,9 +45,9 @@ export function HeaderMenu({ onLogout }: HeaderMenuProps) {
   const handleLogout = () => {
     clearUserAuth();
     onLogout?.();
+    window.location.href = "/";
     setPopupOpen(false);
     setLogoutModalOpen(false);
-    router.push("/");
   };
 
   useEffect(() => {

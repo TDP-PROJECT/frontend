@@ -4,6 +4,7 @@ import { ChatRequest } from "@/types/api";
 type SendChatStreamOptions = {
   onChunk: (chunk: string) => void;
   onRoomId?: (roomId: string) => void;
+  onError?: (errorMessage: string) => void;
 };
 
 /**
@@ -12,7 +13,7 @@ type SendChatStreamOptions = {
  */
 export async function sendChatStream(
   params: ChatRequest,
-  { onChunk, onRoomId }: SendChatStreamOptions
+  { onChunk, onRoomId, onError }: SendChatStreamOptions
 ): Promise<string> {
   const { userIdx, message, roomId, modelIdx } = params;
 
@@ -45,6 +46,10 @@ export async function sendChatStream(
   const flushEvent = () => {
     if (currentEvent === "roomId" && currentData) {
       onRoomId?.(currentData.trim());
+    } else if (currentEvent === "error" && currentData) {
+      const errorMessage = currentData.trim();
+      onError?.(errorMessage);
+      throw new Error(errorMessage || "스트림 오류 발생");
     }
     currentEvent = "";
     currentData = "";

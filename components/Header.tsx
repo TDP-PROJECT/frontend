@@ -49,7 +49,7 @@ export default function Header() {
       } `}
     >
       <div className="flex items-center gap-4 relative z-10">
-        <Link href="/">
+        <Link href={user?.userId ? "/select" : "/"}>
           <h1 className="text-4xl  font-semibold cursor-pointer">
             <Image
               src="/images/Logo.png"

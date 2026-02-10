@@ -145,6 +145,26 @@ export default function AIAssistantContent({
                 prev.map((c) => (c.roomId === newRoomId ? { ...c, roomId: serverRoomId } : c))
               );
             }
+          },
+          onError(errorMessage) {
+            console.error("스트림 에러:", errorMessage);
+            // 빈 응답 메시지 제거하고 에러 메시지로 교체
+            setMessages((prev) => {
+              const next = [...prev];
+              const last = next[next.length - 1];
+              if (last?.type === "RESPONSE" && last.message === "") {
+                next[next.length - 1] = {
+                  type: "RESPONSE",
+                  message: `오류: ${errorMessage}`
+                };
+              } else {
+                next.push({
+                  type: "RESPONSE",
+                  message: `오류: ${errorMessage}`
+                });
+              }
+              return next;
+            });
           }
         }
       );
