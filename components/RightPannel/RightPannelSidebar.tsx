@@ -3,6 +3,8 @@ import { deleteMemo, searchMemo } from "@/lib/api/memo";
 import useDebounce from "@/lib/hook/useDebounce";
 import { highlightKeyword } from "@/lib/util/highlightKeyword";
 import { ChatContent } from "@/types/api";
+import { is } from "@react-three/fiber/dist/declarations/src/core/utils";
+
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
@@ -21,6 +23,7 @@ type Props = {
   setMemoList: Dispatch<SetStateAction<MemoContent[]>>;
   memoIdx?: number | null;
   setMemoIdx: Dispatch<SetStateAction<number | null>>;
+  isPdfPage?: boolean;
 };
 
 // 사이드 버튼들 /  기록, 검색
@@ -29,7 +32,8 @@ export default function RightPannelSidebar({
   setUiType,
   sideContentType,
   setSideContentType,
-  contentType, //UI 관련
+  contentType,
+  isPdfPage = false, //UI 관련
   chatList,
   setChatList,
   roomId,
@@ -130,10 +134,10 @@ export default function RightPannelSidebar({
     <div
       className={`${uiType === "full" ? "w-[176px]" : "w-[55px]"}  flex flex-col gap-[24px] transition-all duration-300 h-full bg-white border-r border-gray-200`}
     >
-      <button role="button" onClick={onClickSideBarBtn} className="px-2">
+      <button role="button" onClick={onClickSideBarBtn} className="px-2 w-[40px]">
         <Image src={"/icons/SideBar.svg"} alt="사이드바" width={24} height={24} />
       </button>
-      <button role="button" onClick={onClickAddBtn} className="px-2">
+      <button role="button" onClick={onClickAddBtn} className="px-2 w-[40px]">
         <Image
           src={`/icons/${contentType == "AI 어시스턴스" ? "+" : "Write"}.svg`}
           alt="새로운 글 작성"
@@ -143,7 +147,7 @@ export default function RightPannelSidebar({
       </button>
 
       {sideContentType == "history" ? (
-        <button role="button" onClick={onClickSearchBtn} className="px-2">
+        <button role="button" onClick={onClickSearchBtn} className="px-2 w-[40px]">
           <Image src={"/icons/Search.svg"} alt="검색" width={24} height={24} />
         </button>
       ) : (
@@ -177,18 +181,22 @@ export default function RightPannelSidebar({
                 onClick={() => setRoomId(item.roomId)}
                 className={`group cursor-pointer ${roomId === item.roomId ? "bg-gray-100" : ""} px-2.5 leading-[38px] mr-4 rounded-lg hover:bg-gray-50 relative`}
               >
-                <p className={`group-hover:max-w-[120px] max-w-[155px] truncate h-[38px] `}>
+                <p
+                  className={`${!isPdfPage ? "group-hover:max-w-[120px]" : ""} max-w-[155px] truncate h-[38px] `}
+                >
                   {sideContentType === "search" && debouncedInputValue.trim()
                     ? highlightKeyword(item.snippet ?? "", debouncedInputValue)
                     : item.messages?.[0]?.message}
                 </p>
-                <button
-                  role="button"
-                  className="absolute right-1.5 top-2 hidden group-hover:block"
-                  onClick={() => onClickChatDeleteBtn(item.roomId)}
-                >
-                  <Image src={"/icons/Trash.svg"} alt="삭제" width={20} height={20} />
-                </button>
+                {!isPdfPage && (
+                  <button
+                    role="button"
+                    className={`absolute right-1.5 top-2 hidden group-hover:block`}
+                    onClick={() => onClickChatDeleteBtn(item.roomId)}
+                  >
+                    <Image src={"/icons/Trash.svg"} alt="삭제" width={20} height={20} />
+                  </button>
+                )}
               </li>
             ))}
 
@@ -204,16 +212,18 @@ export default function RightPannelSidebar({
                     ? highlightKeyword(item.memo ?? "내용 없음", debouncedInputValue)
                     : item.memo || "내용 없음"}
                 </p>
-                <button
-                  role="button"
-                  className="absolute right-1.5 top-2 hidden group-hover:block"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onClickMemoDeleteBtn(item.idx);
-                  }}
-                >
-                  <Image src={"/icons/Trash.svg"} alt="삭제" width={20} height={20} />
-                </button>
+                {!isPdfPage && (
+                  <button
+                    role="button"
+                    className="absolute right-1.5 top-2 hidden group-hover:block"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onClickMemoDeleteBtn(item.idx);
+                    }}
+                  >
+                    <Image src={"/icons/Trash.svg"} alt="삭제" width={20} height={20} />
+                  </button>
+                )}
               </li>
             ))}
         </ul>

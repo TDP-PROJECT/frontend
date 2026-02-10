@@ -69,9 +69,9 @@ type ViewerState = {
   controls: {
     target: [number, number, number];
   };
-
   updatedAt: string;
 };
+
 
 type GradeRule = {
   grade: string;
@@ -83,3 +83,5 @@ type MemoContent = {
   idx: number;
   memo: string;
 };
+type QuizModalView = "start" | "main" | "result";
+
