@@ -61,7 +61,7 @@ export default function RightPannelInPdf() {
 
   return (
     <div
-      className={`relative p-7 pl-4 bg-white rounded-lg shadow-lg flex  duration-300 h-[680px] ${uiType === "full" ? "w-[529px]" : "w-[392px]"}  `}
+      className={`relative p-7 pl-4 bg-white rounded-lg shadow-lg flex  duration-300 h-[680px] ${uiType === "full" ? "w-[529px]" : "w-[392px]"} mr-5  `}
     >
       {/* 왼쪽 사이드 영역 */}
       <Suspense fallback={null}>

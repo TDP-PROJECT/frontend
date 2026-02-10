@@ -9,6 +9,8 @@ import html2canvas from "html2canvas-pro";
 import Image from "next/image";
 import { XIcon } from "lucide-react";
 import RightPannelInPdf from "@/components/RightPannel/RightPannelInPdf";
+import { BottomToolbar, TopToolbar } from "@/components/Toolbar";
+import { Toast } from "@/components/Toast";
 
 // A4 크기 (mm → px 변환, 96 DPI 기준)
 const A4_WIDTH_MM = 210;
@@ -18,7 +20,7 @@ const A4_WIDTH_PX = A4_WIDTH_MM * MM_TO_PX; // 약 794px
 const A4_HEIGHT_PX = A4_HEIGHT_MM * MM_TO_PX; // 약 1123px
 
 // 화면 표시용 스케일 (드래그/리사이즈가 자연스럽게 작동하도록 실제 크기 조정)
-const DISPLAY_SCALE = 0.575;
+const DISPLAY_SCALE = 0.605;
 const DISPLAY_WIDTH_PX = A4_WIDTH_PX * DISPLAY_SCALE; // 약 595px
 const DISPLAY_HEIGHT_PX = A4_HEIGHT_PX * DISPLAY_SCALE; // 약 842px
 
@@ -47,7 +49,7 @@ export default function PdfClient() {
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
   const [pdfName, setPdfName] = useState<string>("");
   const editorRef = useRef<HTMLDivElement>(null);
-
+  const [toastVisible, setToastVisible] = useState(false);
   useEffect(() => {
     const userData =
       typeof window !== "undefined" ? JSON.parse(localStorage.getItem("user") ?? "{}") : null;
@@ -89,6 +91,7 @@ export default function PdfClient() {
 
   // TODO:a4 수정인데 (안에 변경되어야함)
   const handleContentChange = (content: string) => {
+    setToastVisible(true);
     setPages((prev) => {
       const next = [...prev];
       next[currentPageIndex] = { ...next[currentPageIndex], content };
@@ -131,7 +134,7 @@ export default function PdfClient() {
         top: 0;
         width: ${DISPLAY_WIDTH_PX}px;
         min-height: ${DISPLAY_HEIGHT_PX}px;
-        padding: ${40 * DISPLAY_SCALE}px;
+        padding: ${50 * DISPLAY_SCALE}px;
         background-color: #ffffff;
         box-sizing: border-box;
       `;
@@ -199,9 +202,8 @@ export default function PdfClient() {
   const currentPage = pages[currentPageIndex];
 
   return (
-    <div className="bg-[#FBFBFB] h-[calc(100vh-64px)] w-screen flex gap-8">
-      {/* 왼쪽 사이드바: PDF 이름 입력 및 페이지 목록 */}
-      <div className="flex flex-col py-4 pl-3 gap-4">
+    <div className="bg-[#FBFBFB] h-[calc(100vh-64px)] w-screen ">
+      <div className="flex gap-2">
         {/* PDF 이름 입력 */}
         <div className="relative">
           <input
@@ -223,9 +225,19 @@ export default function PdfClient() {
             onClick={() => document.getElementById("pdf-name-input")?.focus()}
           />
         </div>
+        <Button
+          size="sm"
+          onClick={handleExportPDF}
+          className="bg-blue-500 text-white hover:bg-blue-600 "
+        >
+          PDF 출력
+        </Button>
+      </div>
 
+      {/* 컨텐츠 영역 */}
+      <div className="mt-3 grid grid-cols-[100px_3fr_auto] gap-4 ">
         {/* 페이지 목록 */}
-        <div className="w-[fit-content] h-full overflow-y-auto">
+        <div className="w-[fit-content]  pl-5 h-full overflow-y-auto">
           {pages.map((page, index) => (
             <div key={page.id} className="relative mb-2 overflow-show group">
               <button
@@ -256,51 +268,44 @@ export default function PdfClient() {
             +
           </button>
         </div>
-      </div>
 
-      {/* 컨텐츠 영역 */}
-      <div className="flex flex-col gap-3 ">
-        <div
-          ref={editorRef}
-          className="bg-white shadow-lg"
-          style={{
-            width: `${DISPLAY_WIDTH_PX}px`,
-            minHeight: `${DISPLAY_HEIGHT_PX}px`,
-            padding: `${40 * DISPLAY_SCALE}px`
-          }}
-        >
+        {/* a4 미리보기 */}
+        <div className="flex flex-col gap-3 justify-center items-center">
           <div
-            id={`page-editor-${currentPageIndex}`}
-            contentEditable
-            suppressContentEditableWarning
-            onInput={(e) => handleContentChange(e.currentTarget.innerHTML)}
-            dangerouslySetInnerHTML={{ __html: currentPage.content }}
-            className="outline-none min-h-full"
+            ref={editorRef}
+            className="bg-white shadow-lg relative"
             style={{
-              fontSize: "14px",
-              lineHeight: "1.6",
-              color: "#000000"
+              width: `${DISPLAY_WIDTH_PX}px`,
+              minHeight: `${DISPLAY_HEIGHT_PX}px`,
+              padding: `${50 * DISPLAY_SCALE}px`,
+              paddingTop: `${110 * DISPLAY_SCALE}px`
             }}
-          />
-        </div>
-
-        {/* 하단 쪽수 및 PDF 출력 버튼 */}
-        <div className="flex justify-between">
-          <div className="text-sm text-gray-500">
-            {currentPageIndex + 1} / {pages.length}
-          </div>
-          <Button
-            size="xs"
-            onClick={handleExportPDF}
-            className="bg-blue-500 text-white hover:bg-blue-600 "
           >
-            PDF 출력
-          </Button>
+            <div
+              id={`page-editor-${currentPageIndex}`}
+              contentEditable
+              suppressContentEditableWarning
+              onInput={(e) => handleContentChange(e.currentTarget.innerHTML)}
+              dangerouslySetInnerHTML={{ __html: currentPage.content }}
+              className="outline-none min-h-full"
+              style={{
+                fontSize: "14px",
+                lineHeight: "1.6",
+                color: "#000000"
+              }}
+            />
+            <TopToolbar className="absolute top-2 left-[30px] scale-75" />
+            <BottomToolbar className="absolute bottom-2 scale-75 left-1/2 -translate-x-1/2" />
+            <div className="text-sm text-gray-500 relative top-[36px] right-[20px]">
+              {currentPageIndex + 1} / {pages.length}
+            </div>
+          </div>
         </div>
-      </div>
 
-      {/* 오른쪽 ai 및 메모장 내용 */}
-      <RightPannelInPdf />
+        {/* 오른쪽 ai 및 메모장 내용 */}
+        <RightPannelInPdf />
+      </div>
+      {toastVisible && <Toast duration={1500} onClose={() => setToastVisible(false)} />}
     </div>
   );
 }
